@@ -8,6 +8,4 @@
 
 npm install -g expo-cli
 
-npm start 
-(or)
-npm start ios
+npm start
