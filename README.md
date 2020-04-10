@@ -6,10 +6,15 @@
 - 회원가입/로그인 테스트
 
 React-Native-Hooks
+
 Axios
+
 React-Navigation
+
 Styled Component
+
 JavaScript
+
 Redux
 
 # Installation
