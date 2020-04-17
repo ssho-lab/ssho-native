@@ -13,7 +13,7 @@ export default class SwipeCard extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      cards: [...range(1, 50)],
+      cards: [...range(1, 30)],
       swipedAllCards: false,
       swipeDirection: '',
       allSwipedCheck: false,
@@ -25,7 +25,7 @@ export default class SwipeCard extends Component {
     return (
       <View style={styles.card}>
         <Image style={styles.image} source={require('/Users/yoojinkim/Desktop/Ssho-native/assets/image.jpg')}/>
-        <Text style={styles.text}>{card}</Text>
+        <Text style={styles.text}>상품번호 [ {card} ]</Text>
       </View>
     )
   };
@@ -54,83 +54,86 @@ export default class SwipeCard extends Component {
   render () {
     return (
       <View style={styles.container}>
-        <Swiper
-          ref={swiper => {
-            this.swiper = swiper
-          }}
-          allSwipedCheck
-          onSwiped={() => {}}
-          onSwipedLeft={() => this.onSwiped('left')}
-          onSwipedRight={() => this.onSwiped('right')}
-          onSwipedTop={() => this.onSwiped('top')}
-          onSwipedBottom={false}
-          cards={this.state.cards}
-          cardIndex={this.state.cardIndex}
-          cardVerticalMargin={80}
-          renderCard={this.renderCard}
-          onSwipedAll={this.onSwipedAllCards}
-          stackSize={3}
-          stackSeparation={15}
-          overlayLabels={{
-            left: {
-              title: '웩',
-              style: {
-                label: {
-                  backgroundColor: 'black',
-                  borderColor: 'black',
-                  color: 'white',
-                  borderWidth: 1
-                },
-                wrapper: {
-                  flexDirection: 'column',
-                  alignItems: 'flex-end',
-                  justifyContent: 'flex-start',
-                  marginTop: 30,
-                  marginLeft: -30
+          <Swiper
+            ref={swiper => {
+              this.swiper = swiper
+            }}
+            allSwipedCheck
+            onSwiped={() => {}}
+            onSwipedLeft={() => this.onSwiped('left')}
+            onSwipedRight={() => this.onSwiped('right')}
+            cards={this.state.cards}
+            cardIndex={this.state.cardIndex}
+            cardVerticalMargin={80}
+            verticalSwipe={false}
+            renderCard={this.renderCard}
+            onSwipedAll={this.onSwipedAllCards}
+            stackSize={3}
+            stackSeparation={15}
+            overlayLabels={{
+              left: {
+                title: '웩',
+                style: {
+                  label: {
+                    backgroundColor: 'black',
+                    borderColor: 'black',
+                    color: 'white',
+                    borderWidth: 1
+                  },
+                  wrapper: {
+                    flexDirection: 'column',
+                    alignItems: 'flex-end',
+                    justifyContent: 'flex-start',
+                    marginTop: 30,
+                    marginLeft: -30
+                  }
+                }
+              },
+              right: {
+                title: '내꺼',
+                style: {
+                  label: {
+                    backgroundColor: 'black',
+                    borderColor: 'black',
+                    color: 'white',
+                    borderWidth: 1
+                  },
+                  wrapper: {
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
+                    marginTop: 30,
+                    marginLeft: 30
+                  }
+                }
+              },
+              top: {
+                title: '모르겠음',
+                style: {
+                  label: {
+                    backgroundColor: 'black',
+                    borderColor: 'black',
+                    color: 'white',
+                    borderWidth: 1
+                  },
+                  wrapper: {
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }
                 }
               }
-            },
-            right: {
-              title: '내꺼',
-              style: {
-                label: {
-                  backgroundColor: 'black',
-                  borderColor: 'black',
-                  color: 'white',
-                  borderWidth: 1
-                },
-                wrapper: {
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  justifyContent: 'flex-start',
-                  marginTop: 30,
-                  marginLeft: 30
-                }
-              }
-            },
-            top: {
-              title: '모르겠음',
-              style: {
-                label: {
-                  backgroundColor: 'black',
-                  borderColor: 'black',
-                  color: 'white',
-                  borderWidth: 1
-                },
-                wrapper: {
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }
-              }
-            }
-          }}
-          animateOverlayLabelsOpacity
-          animateCardOpacity
-          swipeBackCard
-        >
-          <Button onPress={() => this.swiper.swipeBack()} title='Swipe Back' />
-        </Swiper>
+            }}
+            animateOverlayLabelsOpacity
+            animateCardOpacity
+            swipeBackCard
+          >
+          </Swiper>
+          <Button
+            title="내꺼"
+            color="#841584"
+            accessibilityLabel="내꺼입니다"
+          />
       </View>
     )
   }
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF'
   },
   card: {
-    flex: 1,
+    height: "80%",
     borderRadius: 4,
     borderWidth: 2,
     borderColor: '#E8E8E8',
@@ -150,12 +153,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   image: {
-    width: "100%",
-    height: "50%"
+    marginLeft: "2.5%",
+    width: "95%",
+    height: "90%"
+  },
+  button: {
+    width: 200,
+    height: 100,
+    backgroundColor: 'black'
   },
   text: {
     textAlign: 'center',
-    fontSize: 50,
+    fontSize: 20,
+    color: 'coral',
     backgroundColor: 'transparent'
   },
   done: {
