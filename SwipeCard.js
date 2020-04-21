@@ -13,7 +13,7 @@ export default class SwipeCard extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      cards: [...range(1, 30)],
+      cards: [...range(1, 10)],
       swipedAllCards: false,
       swipeDirection: '',
       allSwipedCheck: false,
@@ -48,12 +48,14 @@ export default class SwipeCard extends Component {
   onSwipedAllCards = () => {
     this.setState({
       swipedAllCards: true
-    })
+    });
+    console.log('Swipe End')
   };
 
   render () {
     return (
-      <View style={styles.container}>
+      <View>
+        <View style={styles.container}>
           <Swiper
             ref={swiper => {
               this.swiper = swiper
@@ -68,8 +70,8 @@ export default class SwipeCard extends Component {
             verticalSwipe={false}
             renderCard={this.renderCard}
             onSwipedAll={this.onSwipedAllCards}
-            stackSize={3}
-            stackSeparation={15}
+            stackSize={2}
+            stackSeparation={20}
             overlayLabels={{
               left: {
                 title: '웩',
@@ -127,13 +129,24 @@ export default class SwipeCard extends Component {
             animateOverlayLabelsOpacity
             animateCardOpacity
             swipeBackCard
+            outputRotationRange={["-20deg", "0deg", "20deg"]}
           >
           </Swiper>
+        </View>
+        <View style={styles.buttonGroup}>
           <Button
-            title="내꺼"
-            color="#841584"
-            accessibilityLabel="내꺼입니다"
+            title="싫어요"
+            color="coral"
+            style={styles.buttons}
+            onPress={()=>{this.swiper.swipeLeft()}}
           />
+          <Button
+            title="좋아요"
+            color="coral"
+            style={styles.buttons}
+            onPress={()=>{this.swiper.swipeRight()}}
+          />
+        </View>
       </View>
     )
   }
@@ -157,10 +170,16 @@ const styles = StyleSheet.create({
     width: "95%",
     height: "90%"
   },
-  button: {
-    width: 200,
+  buttonGroup: {
+    marginTop: 700,
+    flexDirection: "row",
+    justifyContent: 'space-between',
+    margin: 50
+  },
+  buttons: {
+    width: 400,
     height: 100,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
   },
   text: {
     textAlign: 'center',
