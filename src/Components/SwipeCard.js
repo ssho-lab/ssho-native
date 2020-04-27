@@ -13,7 +13,7 @@ export default class SwipeCard extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      cards: [...range(1, 10)],
+      cards: [...range(1, 50)],
       swipedAllCards: false,
       swipeDirection: '',
       allSwipedCheck: false,
@@ -67,7 +67,7 @@ export default class SwipeCard extends Component {
             cards={this.state.cards}
             cardIndex={this.state.cardIndex}
             cardVerticalMargin={80}
-            verticalSwipe={false}
+            verticalSwipe={true}
             renderCard={this.renderCard}
             onSwipedAll={this.onSwipedAllCards}
             stackSize={2}
