@@ -7,7 +7,7 @@ import { Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
-export default function HomeScreen() {
+export default function BubbleScreen() {
   return (
     <View style={styles.container}>
        <Text style={styles.developmentModeText}>Bubble Screen</Text>
@@ -15,7 +15,7 @@ export default function HomeScreen() {
   );
 }
 
-HomeScreen.navigationOptions = {
+BubbleScreen.navigationOptions = {
   header: null,
 };
 
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 50,
   },
-  homeScreenFilename: {
+  bubbleScreenFilename: {
     marginVertical: 7,
   },
   codeHighlightText: {

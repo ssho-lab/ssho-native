@@ -3,13 +3,14 @@ import * as WebBrowser from 'expo-web-browser';
 import React, { Component } from 'react';
 import { Button, StyleSheet, Text, View, Image } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { RectButton, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
+import { WebView } from 'react-native-webview';
 
 const BASE_URL = 'http://13.124.59.2:8081' // 서버 통신을 위한 base url
 
-export default class SwipeCard extends Component {
+export default class SwipeScreen extends Component {
 
   constructor (props) {
     super(props)
@@ -19,7 +20,8 @@ export default class SwipeCard extends Component {
       swipedAllCards: false,
       swipeDirection: '',
       allSwipedCheck: false,
-      cardIndex: 0
+      cardIndex: 0,
+      // swiped: false // 클릭인지 스와이프인지 구분하기 위해
     }
   }
 
@@ -48,25 +50,38 @@ export default class SwipeCard extends Component {
     return (
        card != undefined ? // card 데이터가 없을 땐 빈 카드만 먼저 렌더링 됨
           <View style={styles.card}>
-            <Image style={styles.image} source={{uri: card.imageUrl}} onPress={() => {window.location.href = card.link;}}/>
-            <Text style={styles.text}>{card.title}</Text>
+              <Image style={styles.image} source={{uri: card.imageUrl}}/>
+              <Text style={styles.text}>{card.title}</Text>
+              {/* TouchableOpacity 쓰면 스와이프도 onPress로 인식하는 문제 */}
+            <Button title="링크" onPress={() => { WebBrowser.openBrowserAsync(card.link) // 앱의 내비게이션은 사라짐
+            }}></Button>
           </View>
       : <View style={styles.card}></View>
     )
   };
-  // fixme : 앱 내에서 웹으로 연결하는 건 더 알아봐야함
+
+  shopWebView = (link) => { // 왜 안되는지 모르겠음
+    return <WebView source={{uri: link}} style={styles.container}></WebView>
+  }
 
   onSwiped = (type) => { // 스와이프 방향별 처리를 위한 함수 props
     switch(type){
       case 'top': 
         console.log('모르겠음');
+        // this.setState({ ...this.state, swiped : false });
         break;
       case 'left':
         console.log('웩');
+        // this.setState({ ...this.state, swiped : false })
         break;
       case 'right':
         console.log('내꺼');
+        // this.setState({ ...this.state, swiped : false })
         break;
+      // case 'swiped':
+      //   this.setState({...this.state, swiped : true})
+      //   console.log(this.state.swiped)
+      //   break
       default: 
     }
   }
@@ -78,6 +93,7 @@ export default class SwipeCard extends Component {
     console.log('Swipe End')
   };
 
+
   render () {
     return (
       <View>
@@ -87,7 +103,7 @@ export default class SwipeCard extends Component {
               this.swiper = swiper
             }}
             allSwipedCheck
-            onSwiped={() => {}}
+            onSwiped={() => {this.onSwiped('swiped')}}
             onSwipedLeft={() => this.onSwiped('left')}
             onSwipedRight={() => this.onSwiped('right')}
             cards={this.state.cards}
