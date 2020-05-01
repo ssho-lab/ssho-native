@@ -1,19 +1,21 @@
+import { Ionicons } from '@expo/vector-icons';
+import * as WebBrowser from 'expo-web-browser';
 import React, { Component } from 'react';
-import { Button, StyleSheet, Text, ScrollView, View, Image } from 'react-native';
+import { Button, StyleSheet, Text, View, Image } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
+import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import axios from 'axios';
+import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
 
-// demo purposes only
-function * range (start, end) {
-  for (let i = start; i <= end; i++) {
-    yield i
-  }
-}
+const BASE_URL = 'http://13.124.59.2:8081' // 서버 통신을 위한 base url
 
 export default class SwipeCard extends Component {
+
   constructor (props) {
     super(props)
     this.state = {
-      cards: [...range(1, 50)],
+      // 스와이프 카드를 위한 state들
+      cards: [], // 카드 컨텐츠 리스트
       swipedAllCards: false,
       swipeDirection: '',
       allSwipedCheck: false,
@@ -21,16 +23,40 @@ export default class SwipeCard extends Component {
     }
   }
 
-  renderCard = (card, index) => {
+  // 컴포넌트 마운트 직후
+  componentDidMount = () => {
+    // 서버 통신
+    const response = axios.get(BASE_URL+'/stylenanda?pageNo=1&offset=50', {
+    })
+      .then( (response) => {
+        this.setState({ ...this.state, cards : response.data}) // state 업데이트
+      })
+      .catch( (error) => {
+        console.log(error);
+      });
+  }
+
+  // state 변화 발생 후 업데이트 직전
+  shouldComponentUpdate = ( nextState ) => {
+    if(this.state.cards != nextState.cards){ // cards 변화 비교
+      return true // 재렌더링 실행
+    }
+  }
+
+  // swipe 개별 card 생성을 위한 함수 props
+  renderCard = ( card , index) => {
     return (
-      <View style={styles.card}>
-        <Image style={styles.image} source={require('/Users/yoojinkim/Desktop/Ssho-native/assets/image.jpg')}/>
-        <Text style={styles.text}>상품번호 [ {card} ]</Text>
-      </View>
+       card != undefined ? // card 데이터가 없을 땐 빈 카드만 먼저 렌더링 됨
+          <View style={styles.card}>
+            <Image style={styles.image} source={{uri: card.imageUrl}} onPress={() => {window.location.href = card.link;}}/>
+            <Text style={styles.text}>{card.title}</Text>
+          </View>
+      : <View style={styles.card}></View>
     )
   };
+  // fixme : 앱 내에서 웹으로 연결하는 건 더 알아봐야함
 
-  onSwiped = (type) => {
+  onSwiped = (type) => { // 스와이프 방향별 처리를 위한 함수 props
     switch(type){
       case 'top': 
         console.log('모르겠음');
@@ -45,7 +71,7 @@ export default class SwipeCard extends Component {
     }
   }
 
-  onSwipedAllCards = () => {
+  onSwipedAllCards = () => { // 스와이프 카드 한 덱이 종료되었을 때 호출되는 메소드로 보임
     this.setState({
       swipedAllCards: true
     });
@@ -158,6 +184,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF'
   },
   card: {
+    marginTop: -50,
     height: "80%",
     borderRadius: 4,
     borderWidth: 2,
@@ -171,7 +198,7 @@ const styles = StyleSheet.create({
     height: "90%"
   },
   buttonGroup: {
-    marginTop: 700,
+    marginTop: 650,
     flexDirection: "row",
     justifyContent: 'space-between',
     margin: 50
