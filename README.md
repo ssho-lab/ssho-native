@@ -1,9 +1,22 @@
-# ssho-native
+#Ssho-native
+스와이프 쇼핑 테스트용 react-native repository
 
-React Native Project
+zeplin 스타일링 테스트
+회원가입/로그인 테스트
+React-Native-Hooks
 
-React Native / Hooks / Axios / JavsScript / Redux
+Axios
 
-git clone
+React-Navigation
 
-npm install
+Styled Component
+
+JavaScript
+
+Redux
+
+#Installation
+
+npm install -g expo-cli
+
+npm start
