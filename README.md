@@ -17,6 +17,14 @@ Redux
 
 # Installation
 
+git clone
+
 npm install -g expo-cli
 
+npm install
+
+# Run
+
 npm start
+
+expo start
