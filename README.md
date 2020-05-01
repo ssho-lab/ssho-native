@@ -1,4 +1,4 @@
-#Ssho-native
+# Ssho-native
 스와이프 쇼핑 테스트용 react-native repository
 
 zeplin 스타일링 테스트
@@ -15,7 +15,7 @@ JavaScript
 
 Redux
 
-#Installation
+# Installation
 
 npm install -g expo-cli
 
