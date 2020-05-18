@@ -85,7 +85,7 @@ export default class SwipeScreen extends Component {
   onSwiped = (type) => { // 스와이프 방향별 처리를 위한 함수 props
     switch(type){
       case 'top': 
-        console.log('모르겠음');
+        console.log('슈퍼라이크');
         this.setState({...this.state, imageIndex : 0});
         // this.setState({ ...this.state, swiped : false });
         break;
@@ -176,7 +176,7 @@ export default class SwipeScreen extends Component {
                 }
               },
               top: {
-                title: '모르겠음',
+                title: 'SuperLike',
                 style: {
                   label: {
                     backgroundColor: 'black',
@@ -205,6 +205,12 @@ export default class SwipeScreen extends Component {
             color="coral"
             style={styles.buttons}
             onPress={()=>{this.swiper.swipeLeft()}}
+          />
+          <Button
+            title="뒤로가기"
+            color="coral"
+            style={styles.buttons}
+            onPress={()=>{this.swiper.swipeBack()}}
           />
           <Button
             title="좋아요"
