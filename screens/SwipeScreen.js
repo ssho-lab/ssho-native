@@ -78,9 +78,9 @@ export default class SwipeScreen extends Component {
     console.log(this.state.imageIndex);
   }
 
-  shopWebView = (link) => { // 왜 안되는지 모르겠음
-    return <WebView source={{uri: link}} style={styles.container}></WebView>
-  }
+  // shopWebView = (link) => { // 왜 안되는지 모르겠음
+  //   return <WebView source={{uri: link}} style={styles.container}></WebView>
+  // }
 
   onSwiped = (type) => { // 스와이프 방향별 처리를 위한 함수 props
     switch(type){
