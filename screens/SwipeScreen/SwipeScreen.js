@@ -22,7 +22,7 @@ export default class SwipeScreen extends Component {
     super();
     this.state = {
       // 스와이프 카드를 위한 state들
-      //cards: [], // 카드 컨텐츠 리스트
+      cards: [], // 카드 컨텐츠 리스트
       swipedAllCards: false,
       swipeDirection: "",
       allSwipedCheck: false,
@@ -33,8 +33,16 @@ export default class SwipeScreen extends Component {
   // 컴포넌트 마운트 직후
 
   componentDidMount = () => {
-    // 서버 통신
-    this.props.swiperStore.getCardList();
+    const BASE_URL = "http://13.124.59.2:8081"; // 서버 통신을 위한 base url
+
+    const response = axios
+      .get(BASE_URL + "/item", {})
+      .then((response) => {
+        this.setState({ ...this.state, cards: response.data }); // state 업데이트
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   // state 변화 발생 후 업데이트 직전
@@ -115,7 +123,7 @@ export default class SwipeScreen extends Component {
             }}
             onSwipedLeft={() => this.onSwiped("left")}
             onSwipedRight={() => this.onSwiped("right")}
-            cards={this.props.swiperStore.cards}
+            cards={this.state.cards}
             cardIndex={this.state.cardIndex}
             cardVerticalMargin={80}
             verticalSwipe={true}
