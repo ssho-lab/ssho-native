@@ -21,7 +21,7 @@ export default class SwipeScreen extends Component {
       swipeDirection: '',
       allSwipedCheck: false,
       cardIndex: 0,
-      // swiped: false // 클릭인지 스와이프인지 구분하기 위해
+
       imageIndex: 0,
     }
   }
@@ -40,14 +40,14 @@ export default class SwipeScreen extends Component {
   }
 
   // state 변화 발생 후 업데이트 직전
-  shouldComponentUpdate = ( nextState ) => {
-    if(this.state.imageIndex != nextState.imageIndex){
-      return true
-    }
-    if(this.state.cards != nextState.cards){ // cards 변화 비교
-      return true // 재렌더링 실행
-    }
-  }
+  // shouldComponentUpdate = ( nextState ) => {
+  //   if(this.state.imageIndex != nextState.imageIndex){
+  //     return true
+  //   }
+  //   if(this.state.cards != nextState.cards){ // cards 변화 비교
+  //     return true // 재렌더링 실행
+  //   }
+  // }
 
   // swipe 개별 card 생성을 위한 함수 props
   renderCard = ( card , index ) => {
@@ -55,7 +55,7 @@ export default class SwipeScreen extends Component {
        card != undefined ? // card 데이터가 없을 땐 빈 카드만 먼저 렌더링 됨
           <View style={styles.card}>
               <TouchableOpacity style={styles.image} 
-              onPress={() => {this.changeCardImage()}}
+              onPress={() => {this.changeCardImage(this.state.imageIndex + 1)}}
               >
                 <Image style={{width: "100%", height: "100%"}} 
                 source={{uri: card.productExtra.extraImageUrlList[this.state.imageIndex]}}
@@ -73,9 +73,10 @@ export default class SwipeScreen extends Component {
     )
   };
 
-  changeCardImage = () => {
-    this.setState({...this.state, imageIndex : this.state.imageIndex + 1});
+  changeCardImage = (now) => {
+    this.setState({ ...this.state, imageIndex : now }) // state 업데이트
     console.log(this.state.imageIndex);
+    // 렌더링이 안되는 문제를 겪는 중..
   }
 
   // shopWebView = (link) => { // 왜 안되는지 모르겠음
