@@ -22,13 +22,14 @@ export default class SwipeScreen extends Component {
       allSwipedCheck: false,
       cardIndex: 0,
       // swiped: false // 클릭인지 스와이프인지 구분하기 위해
+      imageIndex: 0,
     }
   }
 
   // 컴포넌트 마운트 직후
   componentDidMount = () => {
     // 서버 통신
-    const response = axios.get(BASE_URL+'/stylenanda?pageNo=1&offset=50', {
+    const response = axios.get(BASE_URL+'/item', {
     })
       .then( (response) => {
         this.setState({ ...this.state, cards : response.data}) // state 업데이트
@@ -40,25 +41,42 @@ export default class SwipeScreen extends Component {
 
   // state 변화 발생 후 업데이트 직전
   shouldComponentUpdate = ( nextState ) => {
+    if(this.state.imageIndex != nextState.imageIndex){
+      return true
+    }
     if(this.state.cards != nextState.cards){ // cards 변화 비교
       return true // 재렌더링 실행
     }
   }
 
   // swipe 개별 card 생성을 위한 함수 props
-  renderCard = ( card , index) => {
+  renderCard = ( card , index ) => {
     return (
        card != undefined ? // card 데이터가 없을 땐 빈 카드만 먼저 렌더링 됨
           <View style={styles.card}>
-              <Image style={styles.image} source={{uri: card.imageUrl}}/>
-              <Text style={styles.text}>{card.title}</Text>
-              {/* TouchableOpacity 쓰면 스와이프도 onPress로 인식하는 문제 */}
-            <Button title="링크" onPress={() => { WebBrowser.openBrowserAsync(card.link) // 앱의 내비게이션은 사라짐
-            }}></Button>
+              <TouchableOpacity style={styles.image} 
+              onPress={() => {this.changeCardImage()}}
+              >
+                <Image style={{width: "100%", height: "100%"}} 
+                source={{uri: card.productExtra.extraImageUrlList[this.state.imageIndex]}}
+                />
+              </TouchableOpacity>
+              <Text>{this.state.imageIndex}</Text>
+              <Text>{card.productExtra.extraImageUrlList.length}</Text>
+              <Text style={styles.text} onPress={() => { 
+                // 앱의 내비게이션은 사라지는 문제
+                WebBrowser.openBrowserAsync(card.link)}}>
+              [{card.mallNm}] {card.title}</Text>
+            <Text style={styles.text}> {card.price}원 </Text>
           </View>
       : <View style={styles.card}></View>
     )
   };
+
+  changeCardImage = () => {
+    this.setState({...this.state, imageIndex : this.state.imageIndex + 1});
+    console.log(this.state.imageIndex);
+  }
 
   shopWebView = (link) => { // 왜 안되는지 모르겠음
     return <WebView source={{uri: link}} style={styles.container}></WebView>
@@ -68,14 +86,17 @@ export default class SwipeScreen extends Component {
     switch(type){
       case 'top': 
         console.log('모르겠음');
+        this.setState({...this.state, imageIndex : 0});
         // this.setState({ ...this.state, swiped : false });
         break;
       case 'left':
         console.log('웩');
+        this.setState({...this.state, imageIndex : 0});
         // this.setState({ ...this.state, swiped : false })
         break;
       case 'right':
         console.log('내꺼');
+        this.setState({...this.state, imageIndex : 0});
         // this.setState({ ...this.state, swiped : false })
         break;
       // case 'swiped':
@@ -83,6 +104,8 @@ export default class SwipeScreen extends Component {
       //   console.log(this.state.swiped)
       //   break
       default: 
+        this.setState({...this.state, imageIndex : 0});
+        break;
     }
   }
 
@@ -110,6 +133,7 @@ export default class SwipeScreen extends Component {
             cardIndex={this.state.cardIndex}
             cardVerticalMargin={80}
             verticalSwipe={true}
+            disableBottomSwipe={true}
             renderCard={this.renderCard}
             onSwipedAll={this.onSwipedAllCards}
             stackSize={2}
@@ -209,9 +233,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   image: {
-    marginLeft: "2.5%",
-    width: "95%",
-    height: "90%"
+    marginLeft: "5%",
+    width: "90%",
+    height: "80%"
   },
   buttonGroup: {
     marginTop: 650,
@@ -226,9 +250,11 @@ const styles = StyleSheet.create({
   },
   text: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 18,
     color: 'coral',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
+    margin: "2%"
+    
   },
   done: {
     textAlign: 'center',
