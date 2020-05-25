@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as React from "react";
 
 import TabBarIcon from "../components/TabBarIcon";
-import BubbleScreen from "../screens/BubbleScreen";
+import BubbleScreen from "../screens/BubbleScreen/BubbleScreen";
 import SwipeScreen from "../screens/SwipeScreen/SwipeScreen";
 
 const BottomTab = createBottomTabNavigator();

@@ -1,7 +1,9 @@
 import SwiperStore from "./swiper";
 
-const swiperStore = new SwiperStore();
+class RootStore {
+  constructor() {
+    this.swiperStore = new SwiperStore(this);
+  }
+}
 
-export default {
-  swiperStore: swiperStore,
-};
+export default RootStore;

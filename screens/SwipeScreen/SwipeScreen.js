@@ -30,28 +30,23 @@ export default class SwipeScreen extends Component {
       // swiped: false // 클릭인지 스와이프인지 구분하기 위해
     };
   }
+
   // 컴포넌트 마운트 직후
-
   componentDidMount = () => {
-    const BASE_URL = "http://13.124.59.2:8081"; // 서버 통신을 위한 base url
-
-    const response = axios
-      .get(BASE_URL + "/item", {})
-      .then((response) => {
-        this.setState({ ...this.state, cards: response.data }); // state 업데이트
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.props.swiperStore.getCardList();
+    // this.setState({
+    //   ...this.state,
+    //   cards: this.props.swiperStore.cards,
+    // });
   };
 
   // state 변화 발생 후 업데이트 직전
-  // shouldComponentUpdate = (nextState) => {
-  //   if (this.state.cards != nextState.cards) {
-  //     // cards 변화 비교
-  //     return true; // 재렌더링 실행
-  //   }
-  // };
+  shouldComponentUpdate = (nextState) => {
+    if (this.state.cards != nextState.cards) {
+      // cards 변화 비교
+      return true; // 재렌더링 실행
+    }
+  };
 
   // swipe 개별 card 생성을 위한 함수 props
   renderCard = (card, index) => {
@@ -77,7 +72,7 @@ export default class SwipeScreen extends Component {
     return <WebView source={{ uri: link }} style={styles.container}></WebView>;
   };
 
-  onSwiped = (type) => {
+  onSwiped = (type, cardIndex) => {
     // 스와이프 방향별 처리를 위한 함수 props
     switch (type) {
       case "top":
@@ -85,10 +80,12 @@ export default class SwipeScreen extends Component {
         // this.setState({ ...this.state, swiped : false });
         break;
       case "left":
+        this.props.swiperStore.addList(cardIndex, 0); // like 0이면 싫어요
         console.log("웩");
         // this.setState({ ...this.state, swiped : false })
         break;
       case "right":
+        this.props.swiperStore.addList(cardIndex, 1); // like 1이면 좋아요
         console.log("내꺼");
         // this.setState({ ...this.state, swiped : false })
         break;
@@ -105,111 +102,111 @@ export default class SwipeScreen extends Component {
     this.setState({
       swipedAllCards: true,
     });
+    // save likeList
     console.log("Swipe End");
   };
 
   render() {
     const { swiperStore } = this.props.swiperStore;
     return (
-      <View>
-        <View style={styles.container}>
-          <Swiper
-            ref={(swiper) => {
-              this.swiper = swiper;
-            }}
-            allSwipedCheck
-            onSwiped={() => {
-              this.onSwiped("swiped");
-            }}
-            onSwipedLeft={() => this.onSwiped("left")}
-            onSwipedRight={() => this.onSwiped("right")}
-            cards={this.state.cards}
-            cardIndex={this.state.cardIndex}
-            cardVerticalMargin={80}
-            verticalSwipe={true}
-            renderCard={this.renderCard}
-            onSwipedAll={this.onSwipedAllCards}
-            stackSize={2}
-            stackSeparation={20}
-            overlayLabels={{
-              left: {
-                title: "웩",
-                style: {
-                  label: {
-                    backgroundColor: "black",
-                    borderColor: "black",
-                    color: "white",
-                    borderWidth: 1,
-                  },
-                  wrapper: {
-                    flexDirection: "column",
-                    alignItems: "flex-end",
-                    justifyContent: "flex-start",
-                    marginTop: 30,
-                    marginLeft: -30,
-                  },
+      <View style={styles.container}>
+        <Swiper
+          ref={(swiper) => {
+            this.swiper = swiper;
+          }}
+          allSwipedCheck
+          onSwiped={() => {
+            this.onSwiped("swiped");
+          }}
+          onSwipedLeft={(cardIndex) => this.onSwiped("left", cardIndex)}
+          onSwipedRight={(cardIndex) => this.onSwiped("right", cardIndex)}
+          cards={this.props.swiperStore.cards}
+          cardIndex={this.state.cardIndex}
+          cardVerticalMargin={80}
+          verticalSwipe={true}
+          renderCard={this.renderCard}
+          onSwipedAll={this.onSwipedAllCards}
+          stackSize={2}
+          stackSeparation={20}
+          overlayLabels={{
+            left: {
+              title: "웩",
+              style: {
+                label: {
+                  backgroundColor: "black",
+                  borderColor: "black",
+                  color: "white",
+                  borderWidth: 1,
+                },
+                wrapper: {
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                  justifyContent: "flex-start",
+                  marginTop: 30,
+                  marginLeft: -30,
                 },
               },
-              right: {
-                title: "내꺼",
-                style: {
-                  label: {
-                    backgroundColor: "black",
-                    borderColor: "black",
-                    color: "white",
-                    borderWidth: 1,
-                  },
-                  wrapper: {
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    justifyContent: "flex-start",
-                    marginTop: 30,
-                    marginLeft: 30,
-                  },
+            },
+            right: {
+              title: "내꺼",
+              style: {
+                label: {
+                  backgroundColor: "black",
+                  borderColor: "black",
+                  color: "white",
+                  borderWidth: 1,
+                },
+                wrapper: {
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  marginTop: 30,
+                  marginLeft: 30,
                 },
               },
-              top: {
-                title: "모르겠음",
-                style: {
-                  label: {
-                    backgroundColor: "black",
-                    borderColor: "black",
-                    color: "white",
-                    borderWidth: 1,
-                  },
-                  wrapper: {
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  },
+            },
+            top: {
+              title: "모르겠음",
+              style: {
+                label: {
+                  backgroundColor: "black",
+                  borderColor: "black",
+                  color: "white",
+                  borderWidth: 1,
+                },
+                wrapper: {
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
                 },
               },
-            }}
-            animateOverlayLabelsOpacity
-            animateCardOpacity
-            swipeBackCard
-            outputRotationRange={["-20deg", "0deg", "20deg"]}
-            useViewOverflow={Platform.OS === "ios"}
-          ></Swiper>
-        </View>
-        <View style={styles.buttonGroup}>
-          <Button
-            title="싫어요"
-            color="coral"
-            style={styles.buttons}
-            onPress={() => {
-              this.swiper.swipeLeft();
-            }}
-          />
-          <Button
-            title="좋아요"
-            color="coral"
-            style={styles.buttons}
-            onPress={() => {
-              this.swiper.swipeRight();
-            }}
-          />
-        </View>
+            },
+          }}
+          animateOverlayLabelsOpacity
+          animateCardOpacity
+          swipeBackCard
+          outputRotationRange={["-20deg", "0deg", "20deg"]}
+          useViewOverflow={Platform.OS === "ios"}
+        >
+          <View style={styles.buttonGroup}>
+            <Button
+              title="싫어요"
+              color="coral"
+              style={styles.buttons}
+              onPress={() => {
+                this.swiper.swipeLeft();
+              }}
+            />
+            <Button
+              title="좋아요"
+              color="coral"
+              style={styles.buttons}
+              onPress={() => {
+                this.swiper.swipeRight();
+              }}
+            />
+          </View>
+        </Swiper>
       </View>
     );
   }
@@ -235,6 +232,7 @@ const styles = StyleSheet.create({
     height: "90%",
   },
   buttonGroup: {
+    flex: 1,
     marginTop: 650,
     flexDirection: "row",
     justifyContent: "space-between",
