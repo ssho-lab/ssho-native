@@ -1,12 +1,12 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import * as React from 'react';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as React from "react";
 
-import TabBarIcon from '../components/TabBarIcon';
-import BubbleScreen from '../screens/BubbleScreen';
-import SwipeScreen from '../screens/SwipeScreen';
+import TabBarIcon from "../components/TabBarIcon";
+import BubbleScreen from "../screens/BubbleScreen";
+import SwipeScreen from "../screens/SwipeScreen/SwipeScreen";
 
 const BottomTab = createBottomTabNavigator();
-const INITIAL_ROUTE_NAME = 'Home';
+const INITIAL_ROUTE_NAME = "Home";
 
 export default function BottomTabNavigator({ navigation, route }) {
   // Set the header title on the parent stack navigator depending on the
@@ -20,16 +20,20 @@ export default function BottomTabNavigator({ navigation, route }) {
         name="Home"
         component={BubbleScreen}
         options={{
-          title: 'Bubble Select',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-code-working" />,
+          title: "Bubble Select",
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} name="md-code-working" />
+          ),
         }}
       />
       <BottomTab.Screen
         name="Links"
         component={SwipeScreen}
         options={{
-          title: 'Swipe Card',
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
+          title: "Swipe Card",
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon focused={focused} name="md-book" />
+          ),
         }}
       />
     </BottomTab.Navigator>
@@ -37,12 +41,13 @@ export default function BottomTabNavigator({ navigation, route }) {
 }
 
 function getHeaderTitle(route) {
-  const routeName = route.state?.routes[route.state.index]?.name ?? INITIAL_ROUTE_NAME;
+  const routeName =
+    route.state?.routes[route.state.index]?.name ?? INITIAL_ROUTE_NAME;
 
   switch (routeName) {
-    case 'Home':
-      return '버블을 눌러 취향을 선택해보자';
-    case 'Links':
-      return '카드를 넘겨서 옷을 골라보자';
+    case "Home":
+      return "버블을 눌러 취향을 선택해보자";
+    case "Links":
+      return "카드를 넘겨서 옷을 골라보자";
   }
 }
