@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { decorate, observable, action, Autobind } from "mobx";
+import { decorate, observable, action, Autobind, toJS } from "mobx";
 import SwiperRepository from "../repositories/SwiperRepository";
 
 const swiperRepository = new SwiperRepository();
@@ -8,7 +8,7 @@ class SwiperStore {
   constructor(root) {
     this.root = root;
   }
-  //@observable cards = [];
+  @observable cards = [];
   @observable swipeList = [];
   @observable swipeLogs = {
     startTime: "",
@@ -20,11 +20,14 @@ class SwiperStore {
     swiperRepository
       .getItemList()
       .then((response) => {
-        this.cards = response.data;
+        // 10개만
+        this.cards = response.data.slice(0, 10);
       })
       .catch((error) => {
         console.log(error);
       });
+    const result = toJS(this.cards);
+    return result;
   };
 
   @action // swipeLog startTime 저장

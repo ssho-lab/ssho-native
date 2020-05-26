@@ -14,6 +14,7 @@ import { WebView } from "react-native-webview";
 
 // mobx
 import { inject, observer } from "mobx-react";
+import { observable } from "mobx";
 
 @inject("swiperStore")
 @observer
@@ -33,33 +34,21 @@ export default class SwipeScreen extends Component {
 
   // 컴포넌트 마운트 직후
   componentDidMount = () => {
-    const URL = "http://13.124.59.2";
-    axios
-      .get(URL + ":8081/item", {})
-      .then((response) => {
-        const data = response.data.slice(0, 10);
-        this.setState({
-          ...this.state,
-          cards: this.state.cards.concat(data),
-        });
-        console.log("length is " + data.length);
-      })
-      .catch((error) => console.log(error));
-    // const SwiperStore = this.props.swiperStore;
-    // SwiperStore.getCardList();
-    // this.setState({
-    //   ...this.state,
-    //   cards: this.state.cards.concat(SwiperStore.cards),
-    // });
+    const SwiperStore = this.props.swiperStore;
+    const cardList = SwiperStore.getCardList();
+    this.setState({
+      ...this.state,
+      cards: this.state.cards.concat(cardList),
+    });
   };
 
   // state 변화 발생 후 업데이트 직전
-  shouldComponentUpdate = (nextState) => {
-    if (this.state.cards !== nextState.cards) {
-      // cards 변화 비교
-      return true; // 재렌더링 실행
-    }
-  };
+  // shouldComponentUpdate = (nextState) => {
+  //   if (this.state.cards !== nextState.cards) {
+  //     // cards 변화 비교
+  //     return true; // 재렌더링 실행
+  //   }
+  // };
 
   // swipe 개별 card 생성을 위한 함수 props
   renderCard = (card, index) => {
@@ -104,7 +93,7 @@ export default class SwipeScreen extends Component {
         break;
       case "right":
         SwiperStore.addSwipeLog(card, 1); // like 1이면 좋아요
-        console.log("내꺼");
+        console.log("좋아요");
         // this.setState({ ...this.state, swiped : false })
         break;
       // case 'swiped':
@@ -119,6 +108,7 @@ export default class SwipeScreen extends Component {
     const { SwiperStore } = this.props.swiperStore;
     // 스와이프 카드 한 덱이 종료되었을 때 호출되는 메소드로 보임
     this.setState({
+      ...this.state,
       swipedAllCards: true,
     });
     // save likeList
@@ -131,9 +121,9 @@ export default class SwipeScreen extends Component {
     return (
       <View style={styles.container}>
         <Swiper
-          // ref={(swiper) => {
-          //   this.swiper = swiper;
-          // }}
+          ref={(swiper) => {
+            this.swiper = swiper;
+          }}
           allSwipedCheck
           onSwiped={() => {
             this.onSwiped("swiped");
@@ -145,7 +135,7 @@ export default class SwipeScreen extends Component {
           cardVerticalMargin={80}
           verticalSwipe={true}
           renderCard={this.renderCard}
-          onSwipedAll={() => this.onSwipedAllCards}
+          onSwipedAll={() => this.onSwipedAllCards()}
           stackSize={2}
           stackSeparation={10}
           overlayLabels={{
