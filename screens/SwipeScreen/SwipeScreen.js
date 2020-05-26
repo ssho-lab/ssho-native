@@ -18,8 +18,8 @@ import { inject, observer } from "mobx-react";
 @inject("swiperStore")
 @observer
 export default class SwipeScreen extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       // 스와이프 카드를 위한 state들
       cards: [], // 카드 컨텐츠 리스트
@@ -33,16 +33,29 @@ export default class SwipeScreen extends Component {
 
   // 컴포넌트 마운트 직후
   componentDidMount = () => {
-    this.props.swiperStore.getCardList();
+    const URL = "http://13.124.59.2";
+    axios
+      .get(URL + ":8081/item", {})
+      .then((response) => {
+        const data = response.data.slice(0, 10);
+        this.setState({
+          ...this.state,
+          cards: this.state.cards.concat(data),
+        });
+        console.log("length is " + data.length);
+      })
+      .catch((error) => console.log(error));
+    // const SwiperStore = this.props.swiperStore;
+    // SwiperStore.getCardList();
     // this.setState({
     //   ...this.state,
-    //   cards: this.props.swiperStore.cards,
+    //   cards: this.state.cards.concat(SwiperStore.cards),
     // });
   };
 
   // state 변화 발생 후 업데이트 직전
   shouldComponentUpdate = (nextState) => {
-    if (this.state.cards != nextState.cards) {
+    if (this.state.cards !== nextState.cards) {
       // cards 변화 비교
       return true; // 재렌더링 실행
     }
@@ -73,6 +86,11 @@ export default class SwipeScreen extends Component {
   };
 
   onSwiped = (type, cardIndex) => {
+    const card = this.state.cards[cardIndex];
+    //const id = card["id"];
+    //console.log(id);
+    //const itemId = this.state.cards[cardIndex].id;
+    const SwiperStore = this.props.swiperStore;
     // 스와이프 방향별 처리를 위한 함수 props
     switch (type) {
       case "top":
@@ -80,12 +98,12 @@ export default class SwipeScreen extends Component {
         // this.setState({ ...this.state, swiped : false });
         break;
       case "left":
-        this.props.swiperStore.addList(cardIndex, 0); // like 0이면 싫어요
-        console.log("웩");
+        SwiperStore.addSwipeLog(card, -1); // like -1이면 싫어요
+        console.log("싫어요");
         // this.setState({ ...this.state, swiped : false })
         break;
       case "right":
-        this.props.swiperStore.addList(cardIndex, 1); // like 1이면 좋아요
+        SwiperStore.addSwipeLog(card, 1); // like 1이면 좋아요
         console.log("내꺼");
         // this.setState({ ...this.state, swiped : false })
         break;
@@ -98,36 +116,38 @@ export default class SwipeScreen extends Component {
   };
 
   onSwipedAllCards = () => {
+    const { SwiperStore } = this.props.swiperStore;
     // 스와이프 카드 한 덱이 종료되었을 때 호출되는 메소드로 보임
     this.setState({
       swipedAllCards: true,
     });
     // save likeList
+    SwiperStore.saveSwipeLogs();
     console.log("Swipe End");
   };
 
   render() {
-    const { swiperStore } = this.props.swiperStore;
+    const SwiperStore = this.props.swiperStore;
     return (
       <View style={styles.container}>
         <Swiper
-          ref={(swiper) => {
-            this.swiper = swiper;
-          }}
+          // ref={(swiper) => {
+          //   this.swiper = swiper;
+          // }}
           allSwipedCheck
           onSwiped={() => {
             this.onSwiped("swiped");
           }}
           onSwipedLeft={(cardIndex) => this.onSwiped("left", cardIndex)}
           onSwipedRight={(cardIndex) => this.onSwiped("right", cardIndex)}
-          cards={this.props.swiperStore.cards}
+          cards={this.state.cards}
           cardIndex={this.state.cardIndex}
           cardVerticalMargin={80}
           verticalSwipe={true}
           renderCard={this.renderCard}
-          onSwipedAll={this.onSwipedAllCards}
+          onSwipedAll={() => this.onSwipedAllCards}
           stackSize={2}
-          stackSeparation={20}
+          stackSeparation={10}
           overlayLabels={{
             left: {
               title: "웩",

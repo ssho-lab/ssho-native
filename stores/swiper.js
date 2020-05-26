@@ -1,49 +1,56 @@
 import React, { Component } from "react";
 import { decorate, observable, action, Autobind } from "mobx";
-import axios from "axios";
+import SwiperRepository from "../repositories/SwiperRepository";
+
+const swiperRepository = new SwiperRepository();
 
 class SwiperStore {
-  @observable cards = [];
-  @observable likeList = [];
-  @observable idx = 0;
-
   constructor(root) {
     this.root = root;
   }
+  //@observable cards = [];
+  @observable swipeList = [];
+  @observable swipeLogs = {
+    startTime: "",
+    swipeList: this.swipeList,
+  };
 
-  @action
+  @action // api를 통해 itemList 가져오기
   getCardList = () => {
-    const BASE_URL = "http://13.124.59.2:8081"; // 서버 통신을 위한 base url
-    axios
-      .get(BASE_URL + "/item", {})
+    swiperRepository
+      .getItemList()
       .then((response) => {
         this.cards = response.data;
-        console.log(this.cards);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  @action
-  addList = (cardIndex, like) => {
-    /* [
-      set_id, created_time, 
-      item_list: [{user_id, item_id, like, timestamp},
-      {user_id, item_id, like, timestamp},
-      {item_id, like, timestamp},
-      {item_id, like, timestamp}]
-        ]
-    *
-    */
-    const item = this.cards.find((card) => card.id === cardIndex);
-    const likeItem = { item, like, id: this.idx++ };
-    this.likeList.push(likeItem);
-    console.log(this.likeList[this.likeList.length - 1]);
+  @action // swipeLog startTime 저장
+  setStartTime = () => {
+    const startTime = new Date().toLocaleString();
+    this.swipeLogs.startTime = startTime;
   };
 
-  //@action
-  // save likeList
+  @action // Swipe할때마다 로그 저장하기
+  addSwipeLog = (card, score) => {
+    const itemId = card.id;
+    const swipeTime = new Date().toLocaleString();
+    const swipe = {
+      userId: 1,
+      itemId: itemId,
+      score: score,
+      swipeTime: swipeTime,
+    };
+    //console.log(swipe);
+    this.swipeList.push(swipe);
+  };
+
+  @action // save likeList
+  saveSwipeLogs = () => {
+    swiperRepository.saveSwipeLogs(this.swipeLogs);
+  };
 }
 
 export default SwiperStore;
