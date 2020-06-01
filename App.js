@@ -9,6 +9,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import useLinking from './navigation/useLinking';
 
+import DevTools from 'mobx-react-devtools';
+
 const Stack = createStackNavigator();
 
 export default function App(props) {
@@ -54,6 +56,7 @@ export default function App(props) {
             <Stack.Screen name="Root" component={BottomTabNavigator} />
           </Stack.Navigator>
         </NavigationContainer>
+        {process.env.NODE_ENV  === 'development' && <DevTools />}
       </View>
     );
   }
