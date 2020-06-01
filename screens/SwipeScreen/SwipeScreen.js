@@ -121,6 +121,7 @@ export default class SwipeScreen extends Component {
       <View style={styles.container}>
         {!isLoading ? (
           <Swiper
+            style={styles.swiper}
             ref={(swiper) => {
               this.swiper = swiper;
             }}
@@ -197,29 +198,28 @@ export default class SwipeScreen extends Component {
             swipeBackCard
             outputRotationRange={["-20deg", "0deg", "20deg"]}
             useViewOverflow={Platform.OS === "ios"}
-          >
-            <View style={styles.buttonGroup}>
-              <Button
-                title="싫어요"
-                color="coral"
-                style={styles.buttons}
-                onPress={() => {
-                  this.swiper.swipeLeft();
-                }}
-              />
-              <Button
-                title="좋아요"
-                color="coral"
-                style={styles.buttons}
-                onPress={() => {
-                  this.swiper.swipeRight();
-                }}
-              />
-            </View>
-          </Swiper>
+          ></Swiper>
         ) : (
           <Text style={styles.text}>Loading....</Text>
         )}
+        <View style={styles.buttonGroup}>
+          <Button
+            title="싫어요"
+            color="coral"
+            style={styles.buttons}
+            onPress={() => {
+              this.swiper.swipeLeft();
+            }}
+          />
+          <Button
+            title="좋아요"
+            color="coral"
+            style={styles.buttons}
+            onPress={() => {
+              this.swiper.swipeRight();
+            }}
+          />
+        </View>
       </View>
     );
   }
@@ -229,6 +229,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5FCFF",
+  },
+  swiper: {
+    height: 200,
   },
   card: {
     marginTop: -50,
@@ -246,7 +249,7 @@ const styles = StyleSheet.create({
   },
   buttonGroup: {
     flex: 1,
-    marginTop: 650,
+    marginTop: 600,
     flexDirection: "row",
     justifyContent: "space-between",
     margin: 50,

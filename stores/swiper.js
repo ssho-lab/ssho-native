@@ -31,7 +31,7 @@ class SwiperStore {
   @action // api를 통해 itemList 가져오기
   async getCardList(params) {
     const response = await swiperRepository.getItemList();
-    const data = response.data.slice(0, 10);
+    const data = response.data;
     this.cards = data.map((card) => new CardModel(card));
   }
 

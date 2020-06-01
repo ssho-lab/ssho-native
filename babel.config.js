@@ -9,12 +9,12 @@ module.exports = function (api) {
           legacy: true,
         },
       ],
-      [
-        "@babel/plugin-proposal-class-properties",
-        {
-          loose: true,
-        },
-      ],
+      // [
+      //   "@babel/plugin-proposal-class-properties",
+      //   {
+      //     loose: true,
+      //   },
+      // ],
     ],
   };
 };
