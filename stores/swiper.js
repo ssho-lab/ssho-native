@@ -49,7 +49,7 @@ class SwiperStore {
     };
     //console.log(swipe);
     this.swipeList.push(swipe);
-    console.log('로그 저장 완료');
+    console.log(card+' 상품 '+score+'점 로그 저장 완료');
   };
 
   @action // save likeList

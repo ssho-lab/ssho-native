@@ -133,6 +133,7 @@ export default class SwipeScreen extends Component {
             onSwiped={() => {this.onSwiped('swiped')}}
             onSwipedLeft={() => this.onSwiped('left')}
             onSwipedRight={() => this.onSwiped('right')}
+            onSwipedTop={() => this.onSwiped('top')}
             cards={this.state.cards}
             cardIndex={this.state.cardIndex}
             cardVerticalMargin={80}
