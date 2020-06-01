@@ -7,7 +7,7 @@ import {
   toJS,
   asyncAction,
 } from "mobx";
-
+import moment from "moment";
 import SwiperRepository from "../repositories/SwiperRepository";
 import CardModel from "../models/CardModel";
 
@@ -38,7 +38,7 @@ class SwiperStore {
   @action // swipeLog startTime 저장
   // moment.js 사용
   setStartTime = () => {
-    const startTime = new Date().toLocaleString();
+    const startTime = moment(new Date()).format("YYYY-MM-DD hh:mm:ss");
     this.swipeLogs.startTime = startTime;
     console.log("startTime is " + startTime);
   };
@@ -46,7 +46,7 @@ class SwiperStore {
   @action // Swipe할때마다 로그 저장하기
   addSwipeLog = (cardIndex, score) => {
     const itemId = this.cards[cardIndex].id;
-    const swipeTime = new Date().toLocaleString();
+    const swipeTime = moment(new Date()).format("YYYY-MM-DD hh:mm:ss");
     const swipe = {
       userId: 1,
       itemId: itemId,
