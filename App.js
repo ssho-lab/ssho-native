@@ -1,5 +1,12 @@
 import * as React from "react";
-import { Platform, StatusBar, StyleSheet, View } from "react-native";
+import {
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
+  Button,
+  Text,
+} from "react-native";
 import { SplashScreen } from "expo";
 import * as Font from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,9 +18,11 @@ import useLinking from "./navigation/useLinking";
 
 // mobx store provider
 import { Provider } from "mobx-react";
-import stores from "./stores";
+import RootStore from "./stores";
 
 const Stack = createStackNavigator();
+//root store
+const root = new RootStore();
 
 export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false);
@@ -51,7 +60,7 @@ export default function App(props) {
     return null;
   } else {
     return (
-      <Provider {...stores}>
+      <Provider {...root}>
         <View style={styles.container}>
           {Platform.OS === "ios" && <StatusBar barStyle="default" />}
           <NavigationContainer
