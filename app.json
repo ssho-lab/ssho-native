@@ -24,10 +24,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "bundler0yj"
+      "bundleIdentifier": "bundleryj"
     },
     "android": {
-      "package": "bundler0yj"
+      "package": "host.exp.exponent"
     },
     "entryPoint": "node_modules/expo/AppEntry.js"
   }

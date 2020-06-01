@@ -1,58 +1,58 @@
-import { Ionicons } from '@expo/vector-icons';
-import * as WebBrowser from 'expo-web-browser';
-import React, { Component } from 'react';
-import { Button, StyleSheet, Text, View, Image } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import * as WebBrowser from "expo-web-browser";
+import React, { Component } from "react";
+import { Button, StyleSheet, Text, View, Image } from "react-native";
+
 import Swiper from 'react-native-deck-swiper';
-import { RectButton, ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import {
+  RectButton,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native-gesture-handler";
 import axios from 'axios';
 import { FA5Style } from '@expo/vector-icons/build/FontAwesome5';
 import { WebView } from 'react-native-webview';
 
-const BASE_URL = 'http://13.124.59.2:8081' // 서버 통신을 위한 base url
+// mobx
+import { inject, observer } from "mobx-react";
+import { observable } from "mobx";
 
+@inject("swiperStore")
+@observer
 export default class SwipeScreen extends Component {
-
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
     this.state = {
       // 스와이프 카드를 위한 state들
       cards: [], // 카드 컨텐츠 리스트
       swipedAllCards: false,
-      swipeDirection: '',
+      swipeDirection: "",
       allSwipedCheck: false,
       cardIndex: 0,
-
-      imageIndex: 0,
-      changeImage: false,
-    }
+      // swiped: false // 클릭인지 스와이프인지 구분하기 위해
+    };
   }
 
   // 컴포넌트 마운트 직후
   componentDidMount = () => {
-    // 서버 통신
-    const response = axios.get(BASE_URL+'/item', {
-    })
-      .then( (response) => {
-        this.setState({ ...this.state, cards : response.data}) // state 업데이트
-      })
-      .catch( (error) => {
-        console.log(error);
-      });
-  }
+    const SwiperStore = this.props.swiperStore;
+    const cardList = SwiperStore.getCardList();
+    this.setState({
+      ...this.state,
+      cards: this.state.cards.concat(cardList),
+    });
+  };
 
   // state 변화 발생 후 업데이트 직전
-  shouldComponentUpdate = ( nextState ) => {
-    if(this.state.imageIndex != nextState.imageIndex){
-      return true
+  shouldComponentUpdate = (nextState) => {
+    if (this.state.cards !== nextState.cards) {
+      // cards 변화 비교
+      return true; // 재렌더링 실행
     }
-    if(this.state.cards != nextState.cards){ // cards 변화 비교
-      return true // 재렌더링 실행
-    }
-  }
+  };
 
   // swipe 개별 card 생성을 위한 함수 props
   renderCard = ( card , index ) => {
-    console.log('render card');
     return (
        card != undefined ? // card 데이터가 없을 땐 빈 카드만 먼저 렌더링 됨
           <View style={styles.card}>
@@ -63,8 +63,6 @@ export default class SwipeScreen extends Component {
                 source={{uri: card.productExtra.extraImageUrlList[this.state.imageIndex]}}
                 />
               </TouchableOpacity>
-              <Text>{this.state.imageIndex}</Text>
-              <Text>{card.productExtra.extraImageUrlList.length}</Text>
               <Text style={styles.text} onPress={() => { 
                 // 앱의 내비게이션은 사라지는 문제
                 WebBrowser.openBrowserAsync(card.link)}}>
@@ -85,29 +83,32 @@ export default class SwipeScreen extends Component {
   //   return <WebView source={{uri: link}} style={styles.container}></WebView>
   // }
 
-  onSwiped = (type) => { // 스와이프 방향별 처리를 위한 함수 props
+  onSwiped = (type, cardIndex) => { // 스와이프 방향별 처리를 위한 함수 props
+    const card = this.state.cards[cardIndex];
+    const SwiperStore = this.props.swiperStore;
+
     switch(type){
       case 'top': 
         console.log('슈퍼라이크');
-        this.setState({...this.state, imageIndex : 0});
-        // this.setState({ ...this.state, swiped : false });
+        SwiperStore.addSwipeLog(card, 2); // 2이면 슈퍼라이크
+        // this.setState({...this.state});
         break;
       case 'left':
         console.log('웩');
-        this.setState({...this.state, imageIndex : 0});
-        // this.setState({ ...this.state, swiped : false })
+        SwiperStore.addSwipeLog(card, 0); // 0이면 싫어요
+        // this.setState({...this.state});
         break;
       case 'right':
         console.log('내꺼');
-        this.setState({...this.state, imageIndex : 0});
-        // this.setState({ ...this.state, swiped : false })
+        SwiperStore.addSwipeLog(card, 1); // 1이면 좋아요
+        // this.setState({...this.state});
         break;
       // case 'swiped':
       //   this.setState({...this.state, swiped : true})
       //   console.log(this.state.swiped)
       //   break
       default: 
-        this.setState({...this.state, imageIndex : 0});
+        this.setState({...this.state});
         break;
     }
   }
