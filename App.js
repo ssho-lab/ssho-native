@@ -16,7 +16,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import BottomTabNavigator from "./navigation/BottomTabNavigator";
 import useLinking from "./navigation/useLinking";
 
-import DevTools from 'mobx-react-devtools';
+// import DevTools from 'mobx-react-devtools';
 
 // mobx store provider
 import { Provider } from "mobx-react";
