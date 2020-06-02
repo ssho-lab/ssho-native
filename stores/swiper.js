@@ -55,6 +55,7 @@ class SwiperStore {
   @action // save likeList
   saveSwipeLogs = () => {
     swiperRepository.saveSwipeLogs(this.swipeLogs);
+    console.log(this.swipeLogs);
   };
 }
 

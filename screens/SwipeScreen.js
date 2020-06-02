@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as WebBrowser from "expo-web-browser";
 import React, { Component } from "react";
-import { Button, StyleSheet, Text, View, Image } from "react-native";
+import { Button, StyleSheet, Text, View, Image, RefreshControl } from "react-native";
 
 import Swiper from 'react-native-deck-swiper';
 import {
@@ -17,6 +17,9 @@ import { WebView } from 'react-native-webview';
 import { inject, observer } from "mobx-react";
 import { observable } from "mobx";
 
+// carousel
+import Carousel from 'react-native-snap-carousel';
+
 @inject("swiperStore")
 @observer
 export default class SwipeScreen extends Component {
@@ -28,20 +31,42 @@ export default class SwipeScreen extends Component {
       swipedAllCards: false,
       swipeDirection: "",
       allSwipedCheck: false,
-      cardIndex: 0,
-      // swiped: false // 클릭인지 스와이프인지 구분하기 위해
+      startCard: 0, // 카드 시작 인덱스
+
+
+      cardIndex: 0, // 카드 아이디를 위한 인덱스
+      refreshing: false,
+      
     };
   }
 
+  makeRefresh = () => {
+    this.setState({...this.state, refreshing: true})
+    console.log('button click');
+    console.log(this.state.refreshing);
+  }
+
+  // refresh를 위한 함수, 현재 작동하지 않음
+  _onRefresh = () => {
+    console.log('want make refresh');
+    this.fetchData().then(() => {
+      this.setState({...this.state, refreshing: false});
+    })
+  };
+
   // 컴포넌트 마운트 직후
   componentDidMount = () => {
+    this.fetchData();
+  };
+
+  fetchData = () => {
     const SwiperStore = this.props.swiperStore;
     const cardList = SwiperStore.getCardList();
     this.setState({
       ...this.state,
       cards: this.state.cards.concat(cardList),
     });
-  };
+  }
 
   // state 변화 발생 후 업데이트 직전
   shouldComponentUpdate = (nextState) => {
@@ -49,20 +74,38 @@ export default class SwipeScreen extends Component {
       // cards 변화 비교
       return true; // 재렌더링 실행
     }
+    else if (this.state.refreshing) return true;
   };
+
+  // Carousel 아이템을 위한 함수
+  _renderItem = ({item, index}) => {
+    return (
+      <View style={{width: "100%", height: "100%"}}>
+        
+        <Image style={{width: "100%", height: "100%"}}
+        source={{uri: item}}/>
+      </View>
+    )
+  }
 
   // swipe 개별 card 생성을 위한 함수 props
   renderCard = ( card , index ) => {
     return (
        card != undefined ? // card 데이터가 없을 땐 빈 카드만 먼저 렌더링 됨
           <View style={styles.card}>
-              <TouchableOpacity style={styles.image} 
-              onPress={() => {this.changeCardImage(card, index)}}
-              >
-                <Image style={{width: "100%", height: "100%"}} 
-                source={{uri: card.productExtra.extraImageUrlList[this.state.imageIndex]}}
+              
+                <Carousel
+                  ref={(c) => { this._carousel = c;}}
+                  data={card.productExtra.extraImageUrlList}
+                  renderItem={this._renderItem}
+                  sliderWidth={370}
+                  itemWidth={370}
+                  enableSnap={true}
+                  autoplay={true}
                 />
-              </TouchableOpacity>
+              <Text onPress={() => { this._carousel.snapToNext(); }}>
+                next image
+              </Text>
               <Text style={styles.text} onPress={() => { 
                 // 앱의 내비게이션은 사라지는 문제
                 WebBrowser.openBrowserAsync(card.link)}}>
@@ -73,58 +116,64 @@ export default class SwipeScreen extends Component {
     )
   };
 
-  changeCardImage = (card, index) => {
-    this.setState({ ...this.state, imageIndex : this.state.imageIndex + 1});
-    console.log(this.state.imageIndex);
-    this.renderCard(card, index);
-  }
-
   // shopWebView = (link) => { // 왜 안되는지 모르겠음
   //   return <WebView source={{uri: link}} style={styles.container}></WebView>
   // }
 
-  onSwiped = (type, cardIndex) => { // 스와이프 방향별 처리를 위한 함수 props
-    const card = this.state.cards[cardIndex];
+  onSwiped = (type) => { // 스와이프 방향별 처리를 위한 함수 props
+    const cardIndex = this.state.cardIndex;
+    const cardId = this.state.cards[cardIndex].id;
     const SwiperStore = this.props.swiperStore;
 
     switch(type){
       case 'top': 
         console.log('슈퍼라이크');
-        SwiperStore.addSwipeLog(card, 2); // 2이면 슈퍼라이크
-        // this.setState({...this.state});
+        SwiperStore.addSwipeLog(cardId, 2); // 2이면 슈퍼라이크
+        this.setState({...this.state, cardIndex : this.state.cardIndex + 1});
         break;
       case 'left':
         console.log('웩');
-        SwiperStore.addSwipeLog(card, 0); // 0이면 싫어요
-        // this.setState({...this.state});
+        SwiperStore.addSwipeLog(cardId, 0); // 0이면 싫어요
+        this.setState({...this.state, cardIndex : this.state.cardIndex + 1});
         break;
       case 'right':
         console.log('내꺼');
-        SwiperStore.addSwipeLog(card, 1); // 1이면 좋아요
-        // this.setState({...this.state});
+        SwiperStore.addSwipeLog(cardId, 1); // 1이면 좋아요
+        this.setState({...this.state, cardIndex : this.state.cardIndex + 1});
         break;
       // case 'swiped':
-      //   this.setState({...this.state, swiped : true})
-      //   console.log(this.state.swiped)
       //   break
       default: 
-        this.setState({...this.state});
         break;
     }
   }
 
   onSwipedAllCards = () => { // 스와이프 카드 한 덱이 종료되었을 때 호출되는 메소드로 보임
+    const SwiperStore = this.props.swiperStore;
     this.setState({
-      swipedAllCards: true
+      ...this.state,
+      swipedAllCards: true,
+      cardIndex: 0,
     });
     console.log('Swipe End')
+    SwiperStore.saveSwipeLogs();
   };
 
 
   render () {
     return (
-      <View>
-        <View style={styles.container}>
+      <View refreshControl={
+        <RefreshControl refreshing={this.state.refreshing}
+        onRefresh={this._onRefresh}/>
+      }>
+        { this.state.cardIndex < this.state.cards.length &&
+        <React.Fragment>
+        <View style={styles.container} 
+            refreshControl={
+            <RefreshControl refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}/>
+            }
+        >
           <Swiper
             ref={swiper => {
               this.swiper = swiper
@@ -135,11 +184,12 @@ export default class SwipeScreen extends Component {
             onSwipedRight={() => this.onSwiped('right')}
             onSwipedTop={() => this.onSwiped('top')}
             cards={this.state.cards}
-            cardIndex={this.state.cardIndex}
+            cardIndex={this.state.startCard}
             cardVerticalMargin={80}
             verticalSwipe={true}
             disableBottomSwipe={true}
             renderCard={this.renderCard}
+            infinite={false}
             onSwipedAll={this.onSwipedAllCards}
             stackSize={2}
             stackSeparation={20}
@@ -224,6 +274,21 @@ export default class SwipeScreen extends Component {
             onPress={()=>{this.swiper.swipeRight()}}
           />
         </View>
+        </React.Fragment>
+        }
+        { this.state.swipedAllCards &&
+        <View refreshControl={
+          <RefreshControl refreshing={this.state.refreshing}
+          onRefresh={this._onRefresh}/>
+        }>
+          <Button
+            title="Do you want more swipe?"
+            color="coral"
+            style={styles.buttons}
+            onPress={()=>{this.makeRefresh();}}
+          />
+        </View>
+        }
       </View>
     )
   }
@@ -265,12 +330,12 @@ const styles = StyleSheet.create({
     color: 'coral',
     backgroundColor: 'transparent',
     margin: "2%"
-    
   },
   done: {
     textAlign: 'center',
     fontSize: 30,
-    color: 'white',
-    backgroundColor: 'transparent'
+    color: 'coral',
+    backgroundColor: 'transparent',
+    margin: "30%"
   }
 })
