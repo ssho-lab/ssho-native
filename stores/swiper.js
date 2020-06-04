@@ -13,8 +13,8 @@ class SwiperStore {
   @observable swipeLogs = {
     startTime: "",
     swipeList: this.swipeList,
-  };
-
+  }
+  
   @action // api를 통해 itemList 가져오기
   getCardList = () => {
     swiperRepository
