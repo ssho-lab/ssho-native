@@ -16,21 +16,14 @@ import { WebView } from "react-native-webview";
 import { inject, observer } from "mobx-react";
 import { observable, toJS } from "mobx";
 
+// carousel
+import Carousel from 'react-native-snap-carousel';
+
 @inject("swiperStore")
 @observer
 export default class SwipeScreen extends Component {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   // 스와이프 카드를 위한 state들
-    //   cards: this.props.swiperStore.cards, // 카드 컨텐츠 리스트
-    //   swipedAllCards: false,
-    //   swipeDirection: "",
-    //   allSwipedCheck: false,
-    //   cardIndex: 0,
-    //   isLoading: true,
-    //   // swiped: false // 클릭인지 스와이프인지 구분하기 위해
-    // };
   }
 
   // 컴포넌트 마운트 직후
@@ -50,13 +43,34 @@ export default class SwipeScreen extends Component {
     }
   };
 
+  // Carousel 아이템을 위한 함수
+  _renderItem = ({item, index}) => {
+    return (
+      <View style={{width: "100%", height: "100%"}}>
+        
+        <Image style={{width: "100%", height: "100%"}}
+        source={{uri: item}}/>
+      </View>
+    )
+  }
+
   // swipe 개별 card 생성을 위한 함수 props
   renderCard = (card, index) => {
     return card != undefined ? ( // card 데이터가 없을 땐 빈 카드만 먼저 렌더링 됨
       <View style={styles.card}>
-        <Image style={styles.image} source={{ uri: card.imageUrl }} />
+         <Carousel
+                  ref={(c) => { this._carousel = c;}}
+                  data={card.productExtra.extraImageUrlList}
+                  renderItem={this._renderItem}
+                  sliderWidth={370}
+                  itemWidth={370}
+                  enableSnap={true}
+                  autoplay={true}
+                />
+              <Text onPress={() => { this._carousel.snapToNext(); }}>
+                next image
+              </Text>
         <Text style={styles.text}>{card.title}</Text>
-        {/* TouchableOpacity 쓰면 스와이프도 onPress로 인식하는 문제 */}
         <Button
           title="링크"
           onPress={() => {
@@ -69,45 +83,32 @@ export default class SwipeScreen extends Component {
     );
   };
 
-  shopWebView = (link) => {
-    // 왜 안되는지 모르겠음
-    return <WebView source={{ uri: link }} style={styles.container}></WebView>;
-  };
 
   onSwiped = (type, cardIndex) => {
     const SwiperStore = this.props.swiperStore;
     // 스와이프 방향별 처리를 위한 함수 props
     switch (type) {
       case "top":
-        console.log("모르겠음");
-        // this.setState({ ...this.state, swiped : false });
+        console.log("슈퍼라이크");
+        SwiperStore.addSwipeLog(cardIndex, 2); // like 2이면 슈퍼라이크
         break;
       case "left":
-        SwiperStore.addSwipeLog(cardIndex, -1); // like -1이면 싫어요
+        SwiperStore.addSwipeLog(cardIndex, 0); // like 0이면 싫어요
         console.log("싫어요");
-        // this.setState({ ...this.state, swiped : false })
         break;
       case "right":
         SwiperStore.addSwipeLog(cardIndex, 1); // like 1이면 좋아요
         console.log("좋아요");
-        // this.setState({ ...this.state, swiped : false })
         break;
       // case 'swiped':
-      //   this.setState({...this.state, swiped : true})
-      //   console.log(this.state.swiped)
       //   break
       default:
+        break;
     }
   };
 
-  onSwipedAllCards = () => {
+  onSwipedAllCards = () => { // 스와이프 카드 한 덱이 종료되었을 때 호출되는 메소드로 보임
     const SwiperStore = this.props.swiperStore;
-    // 스와이프 카드 한 덱이 종료되었을 때 호출되는 메소드로 보임
-    // this.setState({
-    //   ...this.state,
-    //   swipedAllCards: true,
-    // });
-    // save likeList
     SwiperStore.saveSwipeLogs();
     console.log("Swipe End");
   };
@@ -131,6 +132,7 @@ export default class SwipeScreen extends Component {
             }}
             onSwipedLeft={(cardIndex) => this.onSwiped("left", cardIndex)}
             onSwipedRight={(cardIndex) => this.onSwiped("right", cardIndex)}
+            onSwipedTop={() => this.onSwiped('top', cardIndex)}
             cards={cards.slice()}
             cardIndex={cardIndex}
             cardVerticalMargin={80}
@@ -177,7 +179,7 @@ export default class SwipeScreen extends Component {
                 },
               },
               top: {
-                title: "모르겠음",
+                title: "Super Like",
                 style: {
                   label: {
                     backgroundColor: "black",
@@ -210,6 +212,12 @@ export default class SwipeScreen extends Component {
             onPress={() => {
               this.swiper.swipeLeft();
             }}
+          />
+          <Button
+            title="뒤로가기"
+            color="coral"
+            style={styles.buttons}
+            onPress={()=>{this.swiper.swipeBack()}}
           />
           <Button
             title="좋아요"
